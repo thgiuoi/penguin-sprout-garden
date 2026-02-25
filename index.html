@@ -2,102 +2,97 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>365 Hoa Hướng Dương của Na 🌻</title>
+<title>365 Hoa của Na 🌻</title>
 
 <style>
-body {
-    margin: 0;
-    background: radial-gradient(circle at center, #fff6c9, #ffd6a5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: Arial, sans-serif;
-    overflow: hidden;
+body{
+    margin:0;
+    padding:20px;
+    background:#fff8f0;
+    font-family:Arial, sans-serif;
 }
 
-.circle {
-    position: relative;
-    width: 650px;
-    height: 650px;
+/* Lưới 365 ô */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, 60px);
+    gap:12px;
+    justify-content:center;
 }
 
-.flower {
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: #444;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 9px;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
+/* Hoa */
+.flower{
+    width:60px;
+    height:60px;
+    background:#b7e4c7; /* xanh pastel */
+    clip-path: polygon(
+        50% 0%, 61% 20%, 82% 18%, 70% 35%,
+        88% 50%, 70% 65%, 82% 82%, 61% 80%,
+        50% 100%, 39% 80%, 18% 82%, 30% 65%,
+        12% 50%, 30% 35%, 18% 18%, 39% 20%
+    );
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:16px;
+    font-weight:bold;
+    color:white;
+    cursor:pointer;
+    transition:0.3s;
 }
 
-.flower:hover {
-    transform: scale(1.3);
+.flower:hover{
+    transform:scale(1.1);
 }
 
 /* Khi hiện số */
-.showNumber {
-    background: #ff6b6b;
+.showNumber{
+    background:#a0c4ff; /* xanh dương pastel */
 }
 
-/* Khi nở hoa */
-.bloom {
-    background: gold;
-    box-shadow: 0 0 8px orange;
-    transform: scale(1.4);
+/* Khi nở */
+.bloom{
+    background:#ffd166; /* vàng pastel */
 }
 </style>
 </head>
 
 <body>
 
-<div class="circle" id="circle"></div>
+<h2 style="text-align:center;color:#444;">🌻 365 Hoa Năm Của Na 🌻</h2>
+
+<div class="grid" id="grid"></div>
 
 <script>
-const circle = document.getElementById("circle");
-const totalFlowers = 365;
-const radius = 280;
-const center = 325;
+const grid = document.getElementById("grid");
 
-for (let i = 0; i < totalFlowers; i++) {
-
-    const angle = (i / totalFlowers) * (2 * Math.PI);
-
-    const x = center + radius * Math.cos(angle);
-    const y = center + radius * Math.sin(angle);
+for(let i=0;i<365;i++){
 
     const flower = document.createElement("div");
-    flower.classList.add("flower");
-    flower.style.left = x + "px";
-    flower.style.top = y + "px";
+    flower.className="flower";
 
-    let state = 0;
+    let state=0;
+    let randomNumber = Math.floor(Math.random()*30)+1;
 
-    flower.addEventListener("click", function() {
+    flower.onclick=function(){
 
-        if (state === 0) {
+        if(state===0){
             flower.classList.add("showNumber");
-            flower.textContent = "18";
-            state = 1;
-
-        } else if (state === 1) {
+            flower.textContent=randomNumber;
+            state=1;
+        }
+        else if(state===1){
             flower.classList.remove("showNumber");
             flower.classList.add("bloom");
-            flower.textContent = "";
-            state = 2;
+            flower.textContent="";
+            state=2;
         }
+    }
 
-    });
-
-    circle.appendChild(flower);
+    grid.appendChild(flower);
 }
 </script>
 
 </body>
 </html>
+
