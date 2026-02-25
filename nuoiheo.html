@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Penguin Sprout Garden</title>
+
+<style>
+:root{
+  --yellow:#FFF6B7;
+  --blue:#D6ECFF;
+  --green:#DFFFD8;
+}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--yellow);
+  text-align:center;
+}
+
+h1{
+  margin-top:20px;
+}
+
+.month-title{
+  font-size:20px;
+  margin:10px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(6,1fr);
+  gap:10px;
+  padding:20px;
+  max-width:500px;
+  margin:auto;
+}
+
+.day{
+  background:white;
+  border-radius:18px;
+  padding:10px;
+  min-height:70px;
+  cursor:pointer;
+  transition:0.3s;
+  font-size:14px;
+}
+
+.day:hover{
+  transform:scale(1.05);
+}
+
+.today{
+  border:3px solid gold;
+}
+
+.big-flower{
+  font-size:60px;
+  margin:10px;
+}
+
+.year-bouquet{
+  font-size:80px;
+  margin:20px;
+}
+
+.mascot{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  font-size:40px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🌻 Penguin Sprout Garden</h1>
+<p>One Drop a Day, A Garden on the Way.</p>
+
+<div class="month-title" id="monthTitle"></div>
+<div class="grid" id="grid"></div>
+<div class="big-flower" id="monthFlower"></div>
+<div class="year-bouquet" id="yearBouquet"></div>
+
+<div class="mascot">🐧</div>
+
+<script>
+const months = 12;
+const daysPerMonth = 30;
+
+let currentMonth = new Date().getMonth();
+let today = new Date().getDate();
+
+let data = JSON.parse(localStorage.getItem("gardenData")) || {};
+
+function saveData(){
+  localStorage.setItem("gardenData", JSON.stringify(data));
+}
+
+function renderMonth(month){
+  const grid = document.getElementById("grid");
+  grid.innerHTML="";
+  document.getElementById("monthFlower").innerHTML="";
+  document.getElementById("monthTitle").innerHTML="Month " + (month+1);
+
+  if(!data[month]) data[month]=[];
+
+  let completedDays = 0;
+
+  for(let i=1;i<=daysPerMonth;i++){
+    let state = data[month][i] || 0;
+
+    let div = document.createElement("div");
+    div.className="day";
+
+    if(month === new Date().getMonth() && i === today){
+      div.classList.add("today");
+    }
+
+    let money = Math.floor(Math.random()*30)+1;
+
+    function updateDisplay(){
+      if(state===0){
+        div.innerHTML="🌱<br>"+i;
+      }
+      else if(state===1){
+        div.innerHTML="🌱<br>"+i+"<br>"+money+"k";
+      }
+      else if(state===2){
+        div.innerHTML="🌻<br>"+i;
+        completedDays++;
+      }
+    }
+
+    updateDisplay();
+
+    div.onclick=function(){
+      if(state===0){
+        state=1;
+      }
+      else if(state===1){
+        state=2;
+      }
+      data[month][i]=state;
+      saveData();
+      renderMonth(month);
+    }
+
+    grid.appendChild(div);
+  }
+
+  if(data[month].filter(x=>x===2).length===daysPerMonth){
+    document.getElementById("monthFlower").innerHTML="🌻";
+  }
+
+  checkYear();
+}
+
+function checkYear(){
+  let fullMonths = 0;
+  for(let m=0;m<months;m++){
+    if(data[m] && data[m].filter(x=>x===2).length===daysPerMonth){
+      fullMonths++;
+    }
+  }
+  if(fullMonths===12){
+    document.getElementById("yearBouquet").innerHTML="💐";
+  }
+}
+
+renderMonth(currentMonth);
+</script>
+
+</body>
+</html>
