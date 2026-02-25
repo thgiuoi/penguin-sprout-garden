@@ -3,20 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Penguin sprout garden</title>
+<title>Peguin sprout garden</title>
 
 <style>
 body{
   margin:0;
   font-family: "Segoe UI", sans-serif;
-  background: linear-gradient(to bottom,#e6f4ff,#fff6e6);
+  background:#e6f4ff;
   text-align:center;
   transition:0.4s;
-}
-
-.dark{
-  background: linear-gradient(to bottom,#1e2a38,#3a2f2f);
-  color:white;
 }
 
 header{
@@ -26,21 +21,12 @@ header{
 h1{
   margin:0;
   font-weight:600;
-  color:#4a6fa5;
+  color:#6bb6ff;
 }
 
 .total{
   margin-top:8px;
-  font-size:16px;
   font-weight:600;
-}
-
-button{
-  margin-top:10px;
-  padding:6px 14px;
-  border:none;
-  border-radius:20px;
-  cursor:pointer;
 }
 
 .grid{
@@ -52,7 +38,7 @@ button{
   margin:auto;
 }
 
-/* Hoa 8 cánh */
+/* Hoa chung */
 .flower{
   width:70px;
   height:70px;
@@ -91,30 +77,45 @@ button{
 }
 
 /* trạng thái */
-.state0 .petals div{
-  background:#cfe9ff;
-}
-.state0 .center{
-  background:#a9d6ff;
-}
+.state0 .petals div{ background:#cfe9ff; }
+.state0 .center{ background:#a9d6ff; }
 
-.state1 .petals div{
-  background:#d7b49e;
-}
-.state1 .center{
-  background:#b08968;
-  color:white;
-}
+.state1 .petals div{ background:#d7b49e; }
+.state1 .center{ background:#b08968; color:white; }
 
-.state2 .petals div{
-  background:#ffe89a;
-}
-.state2 .center{
-  background:#ffcc4d;
-}
+.state2 .petals div{ background:#ffe89a; }
+.state2 .center{ background:#ffcc4d; }
 
 .flower:active{
   transform:scale(1.1);
+}
+
+/* hoa theme nhỏ */
+.theme-container{
+  margin-top:14px;
+}
+
+.theme-flower{
+  width:40px;
+  height:40px;
+  display:inline-block;
+  position:relative;
+  margin:0 8px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.theme-flower div{
+  position:absolute;
+  width:40%;
+  height:40%;
+  border-radius:50%;
+  top:30%;
+  left:30%;
+}
+
+.theme-flower:hover{
+  transform:scale(1.2);
 }
 </style>
 </head>
@@ -122,10 +123,11 @@ button{
 <body>
 
 <header>
-  <h1>🐧 Penguin sprout garden </h1>
+  <h1>🐧 Peguin sprout garden 🐧</h1>
   <div>🌻 Mỗi ngày một chút dịu dàng, nắng vàng cả vườn hoa 🌻</div>
   <div class="total">Tổng tiền: <span id="total">0</span></div>
-  <button onclick="toggleDark()">🌙 Dark mode</button>
+
+  <div class="theme-container" id="themes"></div>
 </header>
 
 <div class="grid" id="grid"></div>
@@ -133,6 +135,7 @@ button{
 <script>
 const grid = document.getElementById("grid");
 const totalEl = document.getElementById("total");
+const themesDiv = document.getElementById("themes");
 
 let states = JSON.parse(localStorage.getItem("gardenStates")) 
              || Array(365).fill(0);
@@ -140,6 +143,12 @@ let states = JSON.parse(localStorage.getItem("gardenStates"))
 let values = JSON.parse(localStorage.getItem("gardenValues"))
              || Array(365).fill(null);
 
+let savedTheme = JSON.parse(localStorage.getItem("theme")) 
+                || {bg:"#e6f4ff", accent:"#6bb6ff"};
+
+applyTheme(savedTheme.bg, savedTheme.accent);
+
+/* tạo hoa chính */
 function createFlower(i){
   const flower = document.createElement("div");
   flower.classList.add("flower");
@@ -164,15 +173,12 @@ function createFlower(i){
 
   flower.addEventListener("click",()=>{
     states[i] = (states[i]+1)%3;
-
     if(states[i]===1){
       values[i] = Math.floor(Math.random()*30+1);
     }
-
     updateFlower(flower,i);
     saveData();
     updateTotal();
-    checkComplete();
   });
 
   return flower;
@@ -181,18 +187,11 @@ function createFlower(i){
 function updateFlower(flower,i){
   flower.classList.remove("state0","state1","state2");
   flower.classList.add("state"+states[i]);
-
   const center = flower.querySelector(".center");
 
-  if(states[i]===0){
-    center.innerHTML="🐧";
-  }
-  if(states[i]===1){
-    center.innerHTML=values[i];
-  }
-  if(states[i]===2){
-    center.innerHTML="🌻";
-  }
+  if(states[i]===0) center.innerHTML="🐧";
+  if(states[i]===1) center.innerHTML=values[i];
+  if(states[i]===2) center.innerHTML="🌻";
 }
 
 function saveData(){
@@ -201,23 +200,42 @@ function saveData(){
 }
 
 function updateTotal(){
-  let total = 0;
-  values.forEach(v=>{
-    if(v) total+=v;
-  });
+  let total=0;
+  values.forEach(v=>{ if(v) total+=v; });
   totalEl.textContent = total;
 }
 
-function checkComplete(){
-  if(states.every(s=>s===2)){
-    setTimeout(()=>{
-      alert("🎉 365 ngày hoàn thành! Vườn hoa đã nở rộ! 🌻");
-    },200);
-  }
-}
+/* tạo theme hoa nhỏ */
+const themeColors = [
+  {bg:"#fff6d6", accent:"#ffda77"},
+  {bg:"#eaffea", accent:"#7ed957"},
+  {bg:"#e6f4ff", accent:"#6bb6ff"},
+  {bg:"#fff0f7", accent:"#ff8ccf"},
+  {bg:"#f3ecff", accent:"#b388ff"}
+];
 
-function toggleDark(){
-  document.body.classList.toggle("dark");
+themeColors.forEach(t=>{
+  const tf = document.createElement("div");
+  tf.classList.add("theme-flower");
+
+  for(let j=0;j<8;j++){
+    const p = document.createElement("div");
+    p.style.background=t.accent;
+    p.style.transform=`rotate(${j*45}deg) translate(0,-15px)`;
+    tf.appendChild(p);
+  }
+
+  tf.onclick=()=>{
+    applyTheme(t.bg,t.accent);
+    localStorage.setItem("theme",JSON.stringify(t));
+  }
+
+  themesDiv.appendChild(tf);
+});
+
+function applyTheme(bg,accent){
+  document.body.style.background=bg;
+  document.querySelector("h1").style.color=accent;
 }
 
 for(let i=0;i<365;i++){
@@ -229,4 +247,5 @@ updateTotal();
 
 </body>
 </html>
+
 
