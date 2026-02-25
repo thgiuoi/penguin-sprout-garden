@@ -3,7 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peguin sprout garden</title>
+<title>🌱</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 
 <style>
 body{
@@ -18,14 +20,26 @@ header{
   padding:20px;
 }
 
+/* 🌞 Tiêu đề nắng vàng */
 h1{
   margin:0;
-  font-weight:600;
-  color:#6bb6ff;
+  font-family:'Dancing Script', cursive;
+  font-size:42px;
+  background: linear-gradient(90deg,#ffcc4d,#ffd84d,#ffda77,#ffcc4d);
+  background-size:200% auto;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:0 4px 15px rgba(255,204,77,0.4);
+  animation:shine 4s linear infinite;
 }
 
-.total{
-  margin-top:8px;
+@keyframes shine{
+  0%{ background-position:0% center; }
+  100%{ background-position:200% center; }
+}
+
+.progress{
+  margin-top:10px;
   font-weight:600;
 }
 
@@ -38,7 +52,6 @@ h1{
   margin:auto;
 }
 
-/* Hoa chung */
 .flower{
   width:70px;
   height:70px;
@@ -76,7 +89,6 @@ h1{
   font-size:14px;
 }
 
-/* trạng thái */
 .state0 .petals div{ background:#cfe9ff; }
 .state0 .center{ background:#a9d6ff; }
 
@@ -90,7 +102,6 @@ h1{
   transform:scale(1.1);
 }
 
-/* hoa theme nhỏ */
 .theme-container{
   margin-top:14px;
 }
@@ -125,8 +136,7 @@ h1{
 <header>
   <h1>🐧 Peguin sprout garden 🐧</h1>
   <div>🌻 Mỗi ngày một chút dịu dàng, nắng vàng cả vườn hoa 🌻</div>
-  <div class="total">Tổng tiền: <span id="total">0</span></div>
-
+  <div class="progress">🌱: <span id="bloomCount">0</span> / 365</div>
   <div class="theme-container" id="themes"></div>
 </header>
 
@@ -134,8 +144,8 @@ h1{
 
 <script>
 const grid = document.getElementById("grid");
-const totalEl = document.getElementById("total");
 const themesDiv = document.getElementById("themes");
+const bloomEl = document.getElementById("bloomCount");
 
 let states = JSON.parse(localStorage.getItem("gardenStates")) 
              || Array(365).fill(0);
@@ -148,7 +158,6 @@ let savedTheme = JSON.parse(localStorage.getItem("theme"))
 
 applyTheme(savedTheme.bg, savedTheme.accent);
 
-/* tạo hoa chính */
 function createFlower(i){
   const flower = document.createElement("div");
   flower.classList.add("flower");
@@ -178,7 +187,7 @@ function createFlower(i){
     }
     updateFlower(flower,i);
     saveData();
-    updateTotal();
+    updateBloomCount();
   });
 
   return flower;
@@ -199,13 +208,11 @@ function saveData(){
   localStorage.setItem("gardenValues",JSON.stringify(values));
 }
 
-function updateTotal(){
-  let total=0;
-  values.forEach(v=>{ if(v) total+=v; });
-  totalEl.textContent = total;
+function updateBloomCount(){
+  let count = states.filter(s => s === 2).length;
+  bloomEl.textContent = count;
 }
 
-/* tạo theme hoa nhỏ */
 const themeColors = [
   {bg:"#fff6d6", accent:"#ffda77"},
   {bg:"#eaffea", accent:"#7ed957"},
@@ -235,17 +242,15 @@ themeColors.forEach(t=>{
 
 function applyTheme(bg,accent){
   document.body.style.background=bg;
-  document.querySelector("h1").style.color=accent;
 }
 
 for(let i=0;i<365;i++){
   grid.appendChild(createFlower(i));
 }
 
-updateTotal();
+updateBloomCount();
 </script>
 
 </body>
 </html>
-
 
